@@ -1,0 +1,7 @@
+{
+  "name": "advent-of-code",
+  "type": "module",
+  "private": true,
+  "author": "Volcomix",
+  "license": "MIT"
+}
