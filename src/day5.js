@@ -73,7 +73,27 @@ function decodeId(boardingPass) {
 
 async function part1() {
   const boardingPasses = await readBoardingPasses()
-  console.log(Math.max(...boardingPasses.map(decodeId)))
+  console.log('Part 1:', Math.max(...boardingPasses.map(decodeId)))
+}
+
+async function part2() {
+  const boardingPasses = await readBoardingPasses()
+  const ids = boardingPasses.map(decodeId)
+  const minId = Math.min(...ids)
+  const maxId = Math.max(...ids)
+  const remainingIds = new Set(
+    Array.from({ length: maxId - minId + 1 }, (_, id) => minId + id),
+  )
+  for (const id of ids) {
+    remainingIds.delete(id)
+  }
+  if (remainingIds.size !== 1) {
+    throw new Error('More than 1 remaining id:', remainingIds)
+  }
+  for (const id of remainingIds) {
+    console.log('Part 2:', id)
+  }
 }
 
 part1()
+part2()
