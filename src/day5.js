@@ -78,19 +78,29 @@ async function part1() {
 
 async function part2() {
   const boardingPasses = await readBoardingPasses()
-  const ids = boardingPasses.map(decodeId)
-  const minId = Math.min(...ids)
-  const maxId = Math.max(...ids)
-  const remainingIds = new Set(
-    Array.from({ length: maxId - minId + 1 }, (_, id) => minId + id),
-  )
+  let minId = Infinity
+  let maxId = -Infinity
+  const ids = new Set(Array.from({ length: 1023 }, (_, id) => id))
+  for (const boardingPass of boardingPasses) {
+    const id = decodeId(boardingPass)
+    if (id < minId) {
+      minId = id
+    }
+    if (id > maxId) {
+      maxId = id
+    }
+    ids.delete(id)
+  }
+  for (let i = 0; i < minId; i++) {
+    ids.delete(i)
+  }
+  for (let i = maxId + 1; i < 1024; i++) {
+    ids.delete(i)
+  }
+  if (ids.size !== 1) {
+    throw new Error('More than 1 remaining id:', ids)
+  }
   for (const id of ids) {
-    remainingIds.delete(id)
-  }
-  if (remainingIds.size !== 1) {
-    throw new Error('More than 1 remaining id:', remainingIds)
-  }
-  for (const id of remainingIds) {
     console.log('Part 2:', id)
   }
 }
