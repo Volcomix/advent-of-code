@@ -13,9 +13,10 @@ async function readBags() {
       children:
         children === 'no other bags'
           ? []
-          : children
-              .split(', ')
-              .map((bag) => bag.match(/^([0-9+]) (.*) bags?$/)[2]),
+          : children.split(', ').map((bag) => {
+              const match = bag.match(/^([0-9+]) (.*) bags?$/)
+              return { count: Number(match[1]), name: match[2] }
+            }),
     }))
 }
 
@@ -26,7 +27,7 @@ async function part1() {
   const bags = new Map(rawBags.map(({ parent }) => [parent, new Set()]))
   for (const { parent, children } of rawBags) {
     for (const child of children) {
-      bags.get(child).add(parent)
+      bags.get(child.name).add(parent)
     }
   }
 
@@ -51,4 +52,20 @@ async function part1() {
   console.log('Part 1:', result)
 }
 
+async function part2() {
+  let bags = await readBags()
+  bags = new Map(bags.map(({ parent, children }) => [parent, children]))
+  console.log('Part 2:', traverseBag(bags, 'shiny gold') - 1)
+}
+
+function traverseBag(bags, bag) {
+  return bags
+    .get(bag)
+    .reduce(
+      (acc, child) => acc + child.count * traverseBag(bags, child.name),
+      1,
+    )
+}
+
 part1()
+part2()
