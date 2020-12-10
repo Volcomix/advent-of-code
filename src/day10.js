@@ -19,4 +19,23 @@ async function part1() {
   console.log('Part 1:', diffs.get(1) * diffs.get(3))
 }
 
+async function part2() {
+  const adapters = await readAdapters()
+  const counts = new Map([[adapters[adapters.length - 1], 1]])
+  const previousAdapters = [adapters[adapters.length - 1], Infinity, Infinity]
+  for (let i = adapters.length - 2; i >= 0; i--) {
+    const adapter = adapters[i]
+    counts.set(
+      adapter,
+      previousAdapters
+        .filter((a) => a - adapter <= 3)
+        .reduce((sum, a) => sum + counts.get(a), 0),
+    )
+    previousAdapters.pop()
+    previousAdapters.unshift(adapter)
+  }
+  console.log('Part 2:', counts.get(0))
+}
+
 part1()
+part2()
