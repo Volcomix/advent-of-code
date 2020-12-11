@@ -35,7 +35,20 @@ const adjacentDirections = [
  * @param {string[][]} seats
  * @param {Position} position
  */
-function adjacents(seats, position) {
+function isInGrid(seats, position) {
+  return (
+    position.x >= 0 &&
+    position.x < seats[0].length &&
+    position.y >= 0 &&
+    position.y < seats.length
+  )
+}
+
+/**
+ * @param {string[][]} seats
+ * @param {Position} position
+ */
+function adjacentsPart1(seats, position) {
   return adjacentDirections
     .map((direction) => ({
       x: position.x + direction.x,
@@ -43,22 +56,18 @@ function adjacents(seats, position) {
     }))
     .filter(
       (adjacent) =>
-        adjacent.x >= 0 &&
-        adjacent.x < seats[0].length &&
-        adjacent.y >= 0 &&
-        adjacent.y < seats.length &&
-        seats[adjacent.y][adjacent.x] !== '.',
+        isInGrid(seats, adjacent) && seats[adjacent.y][adjacent.x] !== '.',
     )
 }
 
 /**
  * @param {string[][]} seats
  */
-function update(seats) {
+function updatePart1(seats) {
   let hasChanged = false
   const nextSeats = seats.map((line, y) =>
     line.map((seat, x) => {
-      const occupiedSeats = adjacents(seats, { x, y }).filter(
+      const occupiedSeats = adjacentsPart1(seats, { x, y }).filter(
         (adjacent) => seats[adjacent.y][adjacent.x] === '#',
       )
       if (seat === 'L' && occupiedSeats.length === 0) {
@@ -79,7 +88,7 @@ async function part1() {
   let seats = await readSeats()
   let hasChanged = true
   while (hasChanged) {
-    const result = update(seats)
+    const result = updatePart1(seats)
     seats = result.nextSeats
     hasChanged = result.hasChanged
   }
@@ -90,4 +99,67 @@ async function part1() {
   console.log('Part 1:', occupiedCount)
 }
 
+/**
+ * @param {string[][]} seats
+ * @param {Position} position
+ */
+function adjacentsPart2(seats, position) {
+  return adjacentDirections
+    .map((direction) => {
+      let adjacent = {
+        x: position.x + direction.x,
+        y: position.y + direction.y,
+      }
+      while (isInGrid(seats, adjacent)) {
+        if (seats[adjacent.y][adjacent.x] !== '.') {
+          return adjacent
+        }
+        adjacent.x += direction.x
+        adjacent.y += direction.y
+      }
+      return null
+    })
+    .filter((adjacent) => adjacent)
+}
+
+/**
+ * @param {string[][]} seats
+ */
+function updatePart2(seats) {
+  let hasChanged = false
+  const nextSeats = seats.map((line, y) =>
+    line.map((seat, x) => {
+      const occupiedSeats = adjacentsPart2(seats, { x, y }).filter(
+        (adjacent) => seats[adjacent.y][adjacent.x] === '#',
+      )
+      if (seat === 'L' && occupiedSeats.length === 0) {
+        hasChanged = true
+        return '#'
+      } else if (seat === '#' && occupiedSeats.length >= 5) {
+        hasChanged = true
+        return 'L'
+      } else {
+        return seat
+      }
+    }),
+  )
+  return { hasChanged, nextSeats }
+}
+
+async function part2() {
+  let seats = await readSeats()
+  let hasChanged = true
+  while (hasChanged) {
+    const result = updatePart2(seats)
+    seats = result.nextSeats
+    hasChanged = result.hasChanged
+  }
+  const occupiedCount = seats
+    .flat()
+    .reduce((count, seat) => (seat === '#' ? count + 1 : count), 0)
+
+  console.log('Part 2:', occupiedCount)
+}
+
 part1()
+part2()
