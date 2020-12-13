@@ -112,16 +112,41 @@ function lcm(numbers) {
   )
 }
 
+/**
+ * @param {bigint[]} a
+ * @param {bigint[]} b
+ */
+function trySomething(a, b) {
+  const { bezoutCoeffs, gcd } = extendedGcdTwoNumbers(a[0], b[0])
+  const r = lcm([a[0], b[0]])
+  const x = b[1] - a[1]
+  console.log(
+    a,
+    b,
+    bezoutCoeffs,
+    gcd,
+    r,
+    (r + ((x * bezoutCoeffs[0] * a[0]) % r)) % r,
+    (r + ((-x * bezoutCoeffs[1] * b[0]) % r)) % r,
+  )
+}
+
 async function part2() {
+  if (false) {
+    trySomething([7n, 0n], [13n, 1n])
+    trySomething([7n, 0n], [59n, 4n])
+    console.log(lcm([91n, 413n]))
+    // trySomething([13n, 1n], [59n, 4n])
+    // trySomething([7n, 0n], [19n, 7n])
+    return
+  }
+
   const { buses } = await readInput()
   const busWithDelays = buses
     .map((bus, delay) => [bus, BigInt(delay)])
     .filter(([bus]) => bus !== null)
     .sort((a, b) => (b[0] === a[0] ? 0 : b[0] > a[0] ? 1 : -1))
   console.log(busWithDelays)
-  console.log(extendedGcdMoreThanTwoNumbers(busWithDelays.map(([bus]) => bus)))
-  console.log(lcm(busWithDelays.map(([bus]) => bus)))
-  return
   const [firstBus, firstDelay] = busWithDelays[0]
   let timestamp = 0n
   let isAnswer = false
@@ -138,5 +163,70 @@ async function part2() {
   console.log('Part 2:', timestamp - firstDelay)
 }
 
-// part1()
-part2()
+/**
+ * @param {bigint} a1
+ * @param {bigint} n1
+ * @param {bigint} a2
+ * @param {bigint} n2
+ */
+function test(a1, n1, a2, n2) {
+  const { bezoutCoeffs, gcd } = extendedGcdTwoNumbers(n1, n2)
+  console.log(bezoutCoeffs, gcd)
+  let offset = a1 + bezoutCoeffs[0] * n1 * a2
+  if (offset < 0n) {
+    offset *= -1n
+  }
+  return offset
+}
+
+/**
+ * @param {bigint} a
+ * @param {bigint} modulus
+ */
+function modularMultiplicativeInverse(a, modulus) {
+  // Calculate current value of a mod modulus
+  const b = BigInt(a % modulus)
+
+  // We brute force the search for the smaller hipothesis, as we know that the number must exist between the current given modulus and 1
+  for (let hipothesis = 1n; hipothesis <= modulus; hipothesis++) {
+    if ((b * hipothesis) % modulus == 1n) return hipothesis
+  }
+  // If we do not find it, we return 1
+  return 1n
+}
+
+/**
+ *
+ * @param {bigint[]} remainders
+ * @param {bigint[]} modules
+ */
+function solveCRT(remainders, modules) {
+  // Multiply all the modulus
+  const prod = modules.reduce((acc, val) => acc * val, 1n)
+
+  return (
+    modules.reduce((sum, mod, index) => {
+      // Find the modular multiplicative inverse and calculate the sum
+      // SUM( remainder * productOfAllModulus/modulus * MMI ) (mod productOfAllModulus)
+      const p = prod / mod
+      return sum + remainders[index] * modularMultiplicativeInverse(p, mod) * p
+    }, 0n) % prod
+  )
+}
+
+async function part2Reloaded() {
+  const { buses } = await readInput()
+  const busesWithDelays = buses
+    .map((bus, delay) => [bus, BigInt(delay)])
+    .filter(([bus]) => bus !== null)
+    .map(([bus, delay]) => [bus, bus - delay])
+  // .sort((a, b) => (b[0] === a[0] ? 0 : b[0] > a[0] ? 1 : -1))
+
+  const remainders = busesWithDelays.map(([bus, delay]) => delay)
+  const modules = busesWithDelays.map(([bus, delay]) => bus)
+  console.log('Part 2:', solveCRT(remainders, modules))
+}
+
+part1()
+// part2()
+part2Reloaded()
