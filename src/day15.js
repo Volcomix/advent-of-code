@@ -5,7 +5,11 @@ async function readNumbers() {
   return numbers.split(',').map(Number)
 }
 
-async function part1() {
+/**
+ * @param {number} part
+ * @param {number} maxNumber
+ */
+async function getResult(part, maxNumber) {
   const numbers = await readNumbers()
 
   /** @type {Map<number, number>} */
@@ -15,14 +19,15 @@ async function part1() {
     lastIndex.set(numbers[index], index)
   }
 
-  for (let index = numbers.length - 1; index < 2019; index++) {
+  for (let index = numbers.length - 1; index < maxNumber - 1; index++) {
     const number = numbers[index]
     const nextNumber = lastIndex.has(number) ? index - lastIndex.get(number) : 0
     numbers.push(nextNumber)
     lastIndex.set(number, index)
   }
 
-  console.log('Part 1:', numbers[numbers.length - 1])
+  console.log(`Part ${part}:`, numbers[numbers.length - 1])
 }
 
-part1()
+getResult(1, 2020)
+getResult(2, 30000000)
