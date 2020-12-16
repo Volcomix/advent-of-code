@@ -59,4 +59,42 @@ async function part1() {
   )
 }
 
+async function part2() {
+  const tickets = await readTickets()
+  const validTickets = tickets.nearbyTickets.filter((values) =>
+    values.every((value) =>
+      tickets.rules.some((rule) => rule.validValues.has(value)),
+    ),
+  )
+  const positions = Array.from(
+    { length: validTickets[0].length },
+    () => tickets.rules,
+  )
+  for (const values of validTickets) {
+    for (let i = 0; i < values.length; i++) {
+      positions[i] = positions[i].filter((rule) =>
+        rule.validValues.has(values[i]),
+      )
+    }
+  }
+  const positionSet = new Set()
+  while (positionSet.size < positions.length) {
+    const position = positions.findIndex((rules, p) => {
+      return !positionSet.has(p) && rules.length === 1
+    })
+    const positionRule = positions[position][0]
+    positionSet.add(position)
+    for (let i = 0; i < positions.length; i++) {
+      positions[i] = positions[i].filter(
+        (rule) => i === position || rule.name !== positionRule.name,
+      )
+    }
+  }
+  const result = tickets.myTicket
+    .filter((_, i) => positions[i][0].name.startsWith('departure'))
+    .reduce((acc, value) => acc * value, 1)
+  console.log('Part 2:', result)
+}
+
 part1()
+part2()
