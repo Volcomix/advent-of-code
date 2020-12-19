@@ -1,4 +1,4 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 /**
  * @typedef {object} Rule
@@ -15,7 +15,7 @@ import { readFile } from './file-helper.js'
  * @returns {Promise<Tickets>}
  */
 async function readTickets() {
-  const tickets = await readFile(16)
+  const tickets = await readFile()
   const [rulesSection, myTicketSection, nearbyTicketsSection] = tickets.split(
     '\n\n',
   )

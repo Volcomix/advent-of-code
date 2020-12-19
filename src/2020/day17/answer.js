@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readCubes() {
-  const cubes = await readFile(17)
+  const cubes = await readFile()
   return cubes
     .split('\n')
     .map((line) => line.split('').map((cube) => (cube === '#' ? true : false)))

@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readAdapters() {
-  let adapters = await readFile(10)
+  let adapters = await readFile()
   adapters = adapters.split('\n').map(Number)
   adapters.push(0)
   adapters.sort((a, b) => a - b)

@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readNumbers() {
-  const numbers = await readFile(15)
+  const numbers = await readFile()
   return numbers.split(',').map(Number)
 }
 

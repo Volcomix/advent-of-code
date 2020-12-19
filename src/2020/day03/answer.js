@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readTrees() {
-  const input = await fs.readFile('day3-input.txt')
+  const input = await fs.readFile('input.txt')
   return input
     .toString()
     .split('\n')
@@ -29,7 +29,7 @@ async function part1() {
   const trees = await readTrees()
   const slope = { right: 3, down: 1 }
   let treeCount = countTrees(trees, slope)
-  console.log(treeCount)
+  console.log('Part 1:', treeCount)
 }
 
 async function part2() {
@@ -45,7 +45,7 @@ async function part2() {
   for (const slope of slopes) {
     answer *= countTrees(trees, slope)
   }
-  console.log(answer)
+  console.log('Part 2:', answer)
 }
 
 part1()

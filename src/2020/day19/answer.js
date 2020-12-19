@@ -1,4 +1,4 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 /**
  * @typedef {Array<Array<number | string>>} Rule
@@ -6,7 +6,7 @@ import { readFile } from './file-helper.js'
  */
 
 async function readInput() {
-  const input = await readFile(19)
+  const input = await readFile()
   const [rules, messages] = input.split('\n\n')
   return {
     rules: rules.split('\n').reduce((acc, line) => {

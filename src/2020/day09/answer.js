@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readXmas() {
-  const xmas = await readFile(9)
+  const xmas = await readFile()
   return xmas.split('\n').map(Number)
 }
 

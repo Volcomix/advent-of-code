@@ -1,4 +1,4 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 const orientations = ['N', 'E', 'S', 'W']
 
@@ -22,7 +22,7 @@ const orientations = ['N', 'E', 'S', 'W']
  */
 
 async function readInstructions() {
-  const instructions = await readFile(12)
+  const instructions = await readFile()
   return instructions.split('\n').map((instruction) => ({
     action: instruction.substring(0, 1),
     value: Number(instruction.substring(1)),

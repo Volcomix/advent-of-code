@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readBoardingPasses() {
-  const input = await fs.readFile('day5-input.txt')
+  const input = await fs.readFile('input.txt')
   return input
     .toString()
     .split('\n')

@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readNumbers() {
-  const input = await fs.readFile('day1-input.txt')
+  const input = await fs.readFile('input.txt')
   return input.toString().split('\n').map(Number)
 }
 
@@ -12,7 +12,7 @@ async function part1() {
     for (let j = i; j < numbers.length; j++) {
       const b = numbers[j]
       if (a + b === 2020) {
-        console.log(a * b)
+        console.log('Part 1:', a * b)
         return
       }
     }
@@ -28,7 +28,7 @@ async function part2() {
       for (let k = j; k < numbers.length; k++) {
         const c = numbers[k]
         if (a + b + c === 2020) {
-          console.log(a * b * c)
+          console.log('Part 2:', a * b * c)
           return
         }
       }

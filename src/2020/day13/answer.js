@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readInput() {
-  const input = await readFile(13)
+  const input = await readFile()
   const [minTimestamp, buses] = input.split('\n')
   return {
     minTimestamp: BigInt(minTimestamp),

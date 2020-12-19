@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readProgram() {
-  const program = await readFile(14)
+  const program = await readFile()
   return program
     .split('\n')
     .map((line) => line.split(' = '))

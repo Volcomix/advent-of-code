@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readInstructions() {
-  const input = await fs.readFile('./day8-input.txt')
+  const input = await fs.readFile('./input.txt')
   return input
     .toString()
     .split('\n')

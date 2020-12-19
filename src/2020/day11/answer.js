@@ -1,4 +1,4 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 /**
  * @typedef {object} Position
@@ -7,16 +7,8 @@ import { readFile } from './file-helper.js'
  */
 
 async function readSeats() {
-  const input = await readFile(11)
+  const input = await readFile()
   return input.split('\n').map((line) => line.split(''))
-}
-
-/**
- * @param {string[][]} seats
- */
-function logSeats(seats) {
-  seats.forEach((line) => console.log(line.join('')))
-  console.log()
 }
 
 /** @type {Position[]} */

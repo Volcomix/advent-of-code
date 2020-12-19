@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readBags() {
-  const input = await fs.readFile('./day7-input.txt')
+  const input = await fs.readFile('./input.txt')
   return input
     .toString()
     .split('\n')

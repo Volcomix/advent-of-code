@@ -1,7 +1,7 @@
-import { readFile } from './file-helper.js'
+import { readFile } from '../../file-helper.js'
 
 async function readExpressions() {
-  const expressions = await readFile(18)
+  const expressions = await readFile()
   return expressions
     .split('\n')
     .map((expression) => expression.replace(/ /g, ''))

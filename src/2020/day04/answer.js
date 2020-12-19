@@ -37,7 +37,7 @@ const rules = {
 }
 
 async function readPassports() {
-  const input = await fs.readFile('day4-input.txt')
+  const input = await fs.readFile('input.txt')
   return input
     .toString()
     .split('\n\n')

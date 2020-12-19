@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 async function readPasswords() {
-  const input = await fs.readFile('day2-input.txt')
+  const input = await fs.readFile('input.txt')
   return input
     .toString()
     .split('\n')
@@ -21,7 +21,7 @@ async function part1() {
       validCount++
     }
   }
-  console.log(validCount)
+  console.log('Part 1:', validCount)
 }
 
 async function part2() {
@@ -37,7 +37,7 @@ async function part2() {
       validCount++
     }
   }
-  console.log(validCount)
+  console.log('Part 2:', validCount)
 }
 
 part1()
