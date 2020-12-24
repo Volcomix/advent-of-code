@@ -39,9 +39,58 @@ async function readDirections() {
   })
 }
 
+/**
+ * @param {string} tile
+ */
+function getNeihbors(tile) {
+  const coordinates = tile.split(',').map(Number)
+  return Object.values(moves)
+    .map((move) => coordinates.map((coordinate, i) => coordinate + move[i]))
+    .map((neighbor) => neighbor.join(','))
+}
+
+/**
+ * @param {string} tile
+ * @param {Set<string>} blackTiles
+ */
+function getBlackNeighbors(tile, blackTiles) {
+  return getNeihbors(tile).filter((neighbor) => blackTiles.has(neighbor))
+}
+
+/**
+ * @param {string} tile
+ * @param {Set<string>} blackTiles
+ */
+function getWhiteNeighbors(tile, blackTiles) {
+  return getNeihbors(tile).filter((neighbor) => !blackTiles.has(neighbor))
+}
+
+/**
+ * @param {Set<string>} blackTiles
+ */
+function getNextState(blackTiles) {
+  /** @type {Set<string>} */ const whiteTiles = new Set(
+    [...blackTiles].flatMap((tile) => getWhiteNeighbors(tile, blackTiles)),
+  )
+  /** @type {Set<string>} */ const nextBlackTiles = new Set()
+  for (const tile of blackTiles) {
+    const blackNeighbors = getBlackNeighbors(tile, blackTiles)
+    if (blackNeighbors.length > 0 && blackNeighbors.length <= 2) {
+      nextBlackTiles.add(tile)
+    }
+  }
+  for (const tile of whiteTiles) {
+    const blackNeighbors = getBlackNeighbors(tile, blackTiles)
+    if (blackNeighbors.length === 2) {
+      nextBlackTiles.add(tile)
+    }
+  }
+  return nextBlackTiles
+}
+
 async function main() {
   const directions = await readDirections()
-  /** @type {Set<string>} */ const blackTiles = new Set()
+  /** @type {Set<string>} */ let blackTiles = new Set()
   for (const tile of directions) {
     const position = [0, 0, 0]
     for (const direction of tile) {
@@ -57,6 +106,11 @@ async function main() {
     }
   }
   console.log('Part 1:', blackTiles.size)
+
+  for (let i = 0; i < 100; i++) {
+    blackTiles = getNextState(blackTiles)
+  }
+  console.log('Part 2:', blackTiles.size)
 }
 
 main()
