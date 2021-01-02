@@ -10,32 +10,56 @@ async function readNumbers() {
  * @param {number} part
  * @param {number} maxNumber
  */
-async function getResult(part, maxNumber) {
+async function getLastNumberMap(part, maxNumber) {
   const numbers = await readNumbers()
+  const start = Date.now()
 
   /** @type {Map<number, number>} */
-  const lastIndex = new Map()
+  const lastTurns = new Map()
 
-  for (let index = 0; index < numbers.length - 1; index++) {
-    lastIndex.set(numbers[index], index)
+  let turn = 1
+  for (; turn <= numbers.length; turn++) {
+    lastTurns.set(numbers[turn - 1], turn)
   }
-
-  for (let index = numbers.length - 1; index < maxNumber - 1; index++) {
-    const number = numbers[index]
-    const nextNumber = lastIndex.has(number) ? index - lastIndex.get(number) : 0
-    numbers.push(nextNumber)
-    lastIndex.set(number, index)
+  let lastNumber = 0
+  for (; turn < maxNumber; turn++) {
+    const lastTurn = lastTurns.get(lastNumber)
+    lastTurns.set(lastNumber, turn)
+    lastNumber = lastTurn ? turn - lastTurn : 0
   }
-
-  console.log(`Part ${part}:`, numbers[numbers.length - 1])
+  const elapsed = Date.now() - start
+  console.log(`Part ${part}: ${lastNumber} - ${elapsed}ms (Map)`)
 }
 
 /**
  * @param {number} part
  * @param {number} maxNumber
  */
-async function getResultWasm(part, maxNumber) {
+async function getLastNumberTypedArray(part, maxNumber) {
   const numbers = await readNumbers()
+  const start = Date.now()
+  const lastTurns = new Uint32Array(maxNumber)
+  let turn = 1
+  for (; turn <= numbers.length; turn++) {
+    lastTurns[numbers[turn - 1]] = turn
+  }
+  let lastNumber = 0
+  for (; turn < maxNumber; turn++) {
+    const lastTurn = lastTurns[lastNumber]
+    lastTurns[lastNumber] = turn
+    lastNumber = lastTurn ? turn - lastTurn : 0
+  }
+  const elapsed = Date.now() - start
+  console.log(`Part ${part}: ${lastNumber} - ${elapsed}ms (TypedArray)`)
+}
+
+/**
+ * @param {number} part
+ * @param {number} maxNumber
+ */
+async function getLastNumberWasm(part, maxNumber) {
+  const numbers = await readNumbers()
+  const start = Date.now()
   const memory = new WebAssembly.Memory({
     initial: Math.ceil((maxNumber * 32) / 8 / 64 / 1024),
   })
@@ -47,12 +71,12 @@ async function getResultWasm(part, maxNumber) {
   for (let i = 0; i < numbers.length; i++) {
     memoryNumbers[i] = numbers[i]
   }
-  console.log(
-    `Part ${part}:`,
-    instance.exports.getLastNumber(numbers.length, maxNumber),
-  )
+  const lastNumber = instance.exports.getLastNumber(numbers.length, maxNumber)
+  const elapsed = Date.now() - start
+  console.log(`Part ${part}: ${lastNumber} - ${elapsed}ms (WASM)`)
 }
 
-getResult(1, 2020)
-// getResult(2, 30000000)
-getResultWasm(2, 30000000)
+getLastNumberMap(1, 2020)
+getLastNumberMap(2, 30000000)
+getLastNumberTypedArray(2, 30000000)
+getLastNumberWasm(2, 30000000)
