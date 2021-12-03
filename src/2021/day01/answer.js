@@ -11,7 +11,7 @@ async function part1() {
       count++
     }
   }
-  console.log(count)
+  console.log('Part 1:', count)
 }
 
 async function part2() {
@@ -26,7 +26,7 @@ async function part2() {
       count++
     }
   }
-  console.log(count)
+  console.log('Part 2:', count)
 }
 
 part1()
