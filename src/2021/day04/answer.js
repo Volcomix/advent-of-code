@@ -58,20 +58,21 @@ function markBoard(board, value) {
 
 /**
  * @param {number[][]} board
- * @param {number} rowIndex
- * @returns {number}
+ * @returns {boolean}
  */
-function sumRow(board, rowIndex) {
-  return board[rowIndex].reduce((sum, value) => sum + value, 0)
+function won(board) {
+  return wonRow(board) || wonColumn(board)
 }
 
 /**
  * @param {number[][]} board
- * @param {number} columnIndex
  * @returns {number}
  */
-function sumColumn(board, columnIndex) {
-  return board.reduce((sum, row) => sum + row[columnIndex], 0)
+function score(board) {
+  return board
+    .flat()
+    .filter((value) => value > -1)
+    .reduce((sum, value) => sum + value, 0)
 }
 
 /**
@@ -102,19 +103,18 @@ function wonColumn(board) {
 
 /**
  * @param {number[][]} board
- * @returns {boolean}
+ * @param {number} rowIndex
+ * @returns {number}
  */
-function won(board) {
-  return wonRow(board) || wonColumn(board)
+function sumRow(board, rowIndex) {
+  return board[rowIndex].reduce((sum, value) => sum + value, 0)
 }
 
 /**
  * @param {number[][]} board
+ * @param {number} columnIndex
  * @returns {number}
  */
-function score(board) {
-  return board
-    .flat()
-    .filter((value) => value > -1)
-    .reduce((sum, value) => sum + value, 0)
+function sumColumn(board, columnIndex) {
+  return board.reduce((sum, row) => sum + row[columnIndex], 0)
 }
