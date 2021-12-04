@@ -1,5 +1,37 @@
 import { readFile } from '../../file-helper.js'
 
+part1()
+part2()
+
+async function part1() {
+  const { randomNumbers, boards } = await readInput()
+  for (const randomNumber of randomNumbers) {
+    for (const board of boards) {
+      markBoard(board, randomNumber)
+      if (won(board)) {
+        console.log('Part 1:', score(board) * randomNumber)
+        return
+      }
+    }
+  }
+}
+
+async function part2() {
+  const { randomNumbers, boards } = await readInput()
+  for (const randomNumber of randomNumbers) {
+    for (const board of boards) {
+      markBoard(board, randomNumber)
+      if (won(board)) {
+        boards.delete(board)
+        if (boards.size === 0) {
+          console.log('Part 2:', score(board) * randomNumber)
+          return
+        }
+      }
+    }
+  }
+}
+
 async function readInput() {
   const input = await readFile()
   const [randomNumbersInput, ...boardsInput] = input.split('\n\n')
@@ -86,35 +118,3 @@ function score(board) {
     .filter((value) => value > -1)
     .reduce((sum, value) => sum + value, 0)
 }
-
-async function part1() {
-  const { randomNumbers, boards } = await readInput()
-  for (const randomNumber of randomNumbers) {
-    for (const board of boards) {
-      markBoard(board, randomNumber)
-      if (won(board)) {
-        console.log('Part 1:', score(board) * randomNumber)
-        return
-      }
-    }
-  }
-}
-
-async function part2() {
-  const { randomNumbers, boards } = await readInput()
-  for (const randomNumber of randomNumbers) {
-    for (const board of boards) {
-      markBoard(board, randomNumber)
-      if (won(board)) {
-        boards.delete(board)
-        if (boards.size === 0) {
-          console.log('Part 2:', score(board) * randomNumber)
-          return
-        }
-      }
-    }
-  }
-}
-
-part1()
-part2()
