@@ -1,36 +1,9 @@
 import { readFile } from '../../file-helper.js'
 
+const { randomNumbers, boards } = await readInput()
+
 part1()
 part2()
-
-async function part1() {
-  const { randomNumbers, boards } = await readInput()
-  for (const randomNumber of randomNumbers) {
-    for (const board of boards) {
-      markBoard(board, randomNumber)
-      if (won(board)) {
-        console.log('Part 1:', score(board) * randomNumber)
-        return
-      }
-    }
-  }
-}
-
-async function part2() {
-  const { randomNumbers, boards } = await readInput()
-  for (const randomNumber of randomNumbers) {
-    for (const board of boards) {
-      markBoard(board, randomNumber)
-      if (won(board)) {
-        boards.delete(board)
-        if (boards.size === 0) {
-          console.log('Part 2:', score(board) * randomNumber)
-          return
-        }
-      }
-    }
-  }
-}
 
 async function readInput() {
   const input = await readFile()
@@ -42,11 +15,38 @@ async function readInput() {
   return { randomNumbers, boards: new Set(boards) }
 }
 
+function part1() {
+  for (const randomNumber of randomNumbers) {
+    for (const board of boards) {
+      mark(board, randomNumber)
+      if (hasWon(board)) {
+        console.log('Part 1:', score(board) * randomNumber)
+        return
+      }
+    }
+  }
+}
+
+function part2() {
+  for (const randomNumber of randomNumbers) {
+    for (const board of boards) {
+      mark(board, randomNumber)
+      if (hasWon(board)) {
+        boards.delete(board)
+        if (boards.size === 0) {
+          console.log('Part 2:', score(board) * randomNumber)
+          return
+        }
+      }
+    }
+  }
+}
+
 /**
  * @param {number[][]} board
  * @param {number} value
  */
-function markBoard(board, value) {
+function mark(board, value) {
   for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
     for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
       if (board[rowIndex][columnIndex] === value) {
@@ -60,8 +60,8 @@ function markBoard(board, value) {
  * @param {number[][]} board
  * @returns {boolean}
  */
-function won(board) {
-  return wonRow(board) || wonColumn(board)
+function hasWon(board) {
+  return hasWonRow(board) || hasWonColumn(board)
 }
 
 /**
@@ -79,7 +79,7 @@ function score(board) {
  * @param {number[][]} board
  * @returns {boolean}
  */
-function wonRow(board) {
+function hasWonRow(board) {
   for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
     if (sumRow(board, rowIndex) === -5) {
       return true
@@ -92,7 +92,7 @@ function wonRow(board) {
  * @param {number[][]} board
  * @returns {boolean}
  */
-function wonColumn(board) {
+function hasWonColumn(board) {
   for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
     if (sumColumn(board, columnIndex) === -5) {
       return true
