@@ -1,21 +1,10 @@
 import { readFile } from '../../file-helper.js'
 
-const { randomNumbers, boards } = await readInput()
+await part1()
+await part2()
 
-part1()
-part2()
-
-async function readInput() {
-  const input = await readFile()
-  const [randomNumbersInput, ...boardsInput] = input.split('\n\n')
-  const randomNumbers = randomNumbersInput.split(',').map(Number)
-  const boards = boardsInput.map((boardInput) =>
-    boardInput.split('\n').map((row) => row.split(/\s+/).map(Number)),
-  )
-  return { randomNumbers, boards: new Set(boards) }
-}
-
-function part1() {
+async function part1() {
+  const { randomNumbers, boards } = await readInput()
   for (const randomNumber of randomNumbers) {
     for (const board of boards) {
       mark(board, randomNumber)
@@ -27,7 +16,8 @@ function part1() {
   }
 }
 
-function part2() {
+async function part2() {
+  const { randomNumbers, boards } = await readInput()
   for (const randomNumber of randomNumbers) {
     for (const board of boards) {
       mark(board, randomNumber)
@@ -40,6 +30,16 @@ function part2() {
       }
     }
   }
+}
+
+async function readInput() {
+  const input = await readFile()
+  const [randomNumbersInput, ...boardsInput] = input.split('\n\n')
+  const randomNumbers = randomNumbersInput.split(',').map(Number)
+  const boards = boardsInput.map((boardInput) =>
+    boardInput.split('\n').map((row) => row.split(/\s+/).map(Number)),
+  )
+  return { randomNumbers, boards: new Set(boards) }
 }
 
 /**
