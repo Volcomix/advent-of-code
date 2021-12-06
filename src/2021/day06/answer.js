@@ -21,21 +21,16 @@ async function part1() {
 }
 
 async function part2() {
-  const input = await readFile()
-  let timers = input.split(',').map(Number)
-
+  const timers = await readInput()
   const timerCounts = Array.from({ length: 9 }, () => 0)
-
   for (const timer of timers) {
     timerCounts[timer]++
   }
-
   for (let day = 0; day < 256; day++) {
     const newTimerCount = timerCounts.shift()
     timerCounts[6] += newTimerCount
     timerCounts.push(newTimerCount)
   }
-
   console.log(
     'Part 2:',
     timerCounts.reduce((acc, timer) => acc + timer, 0),
