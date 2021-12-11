@@ -1,25 +1,29 @@
 import { readFile } from '../../file-helper.js'
 
-await part1()
-await part2()
+await answer()
 
-async function part1() {
+async function answer() {
   const octopuses = await readInput()
-  let flashCount = 0
-  for (let i = 0; i < 100; i++) {
-    flashCount += step(octopuses)
-  }
-  console.log('Part 1:', flashCount)
-}
 
-async function part2() {
-  const octopuses = await readInput()
+  print(octopuses, { init: true })
+  console.log()
+  console.log('Part 1:', 0)
+  console.log('Part 2:', 0)
+
+  let totalFlashCount = 0
   for (let stepNumber = 1; ; stepNumber++) {
     const flashCount = step(octopuses)
+    if (stepNumber <= 100) {
+      totalFlashCount += flashCount
+    }
+    print(octopuses)
+    console.log()
+    console.log('Part 1:', totalFlashCount)
+    console.log('Part 2:', stepNumber)
     if (flashCount === 100) {
-      console.log('Part 2:', stepNumber)
       return
     }
+    await new Promise((resolve) => setTimeout(resolve, 100))
   }
 }
 
@@ -29,6 +33,36 @@ async function readInput() {
   return Array.from({ length: 10 }, (_, x) =>
     Array.from({ length: 10 }, (_, y) => +lines[y][x]),
   )
+}
+
+/**
+ * @param {number[][]} octopuses
+ * @param {{ init?: boolean }} [options]
+ */
+function print(octopuses, options) {
+  if (options?.init) {
+    console.log()
+  } else {
+    console.log('\x1b[14A\x1b[0J')
+  }
+  for (let y = 0; y < 10; y++) {
+    const energies = []
+    for (let x = 0; x < 10; x++) {
+      energies.push(octopuses[x][y])
+    }
+    console.log(
+      energies
+        .map((energy) => {
+          let color = 226
+          if (energy > 0) {
+            color = Math.ceil(232 + (energy * (255 - 232)) / 10) + 1
+          }
+          return `\x1b[38;5;${color}m%s\x1b[0m`
+        })
+        .join(' '),
+      ...energies,
+    )
+  }
 }
 
 /**
