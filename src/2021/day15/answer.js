@@ -37,10 +37,10 @@ async function readInput() {
  * @param {number[][]} map
  */
 function findBestPath(map) {
-  /** @type {Set<number>} */ const queue = new Set([0])
+  const queue = new Set([0])
   const risks = new Map()
-  map.forEach((/** @type {any[]} */ row, /** @type {number} */ y) => {
-    row.forEach((/** @type {any} */ _, /** @type {number} */ x) => {
+  map.forEach((row, y) => {
+    row.forEach((_, x) => {
       const cell = y * map[0].length + x
       risks.set(cell, Infinity)
     })
