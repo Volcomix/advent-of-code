@@ -5,45 +5,7 @@ await part2()
 
 async function part1() {
   const map = await readInput()
-  /** @type {Set<number>} */ const queue = new Set()
-  const risks = new Map()
-  map.forEach((row, y) => {
-    row.forEach((_, x) => {
-      const cell = y * map[0].length + x
-      queue.add(cell)
-      risks.set(cell, Infinity)
-    })
-  })
-  risks.set(0, 0)
-  const prev = new Map()
-  while (queue.size > 0) {
-    let current = -1
-    let lowestRisk = Infinity
-    for (const cell of queue) {
-      if (risks.get(cell) < lowestRisk) {
-        current = cell
-        lowestRisk = risks.get(cell)
-      }
-    }
-    queue.delete(current)
-    const currentRisk = risks.get(current)
-    if (current === map[0].length * map.length - 1) {
-      const path = new Set()
-      path.add(current)
-      while (current !== 0) {
-        current = prev.get(current)
-        path.add(current)
-      }
-      console.log('Part 1:', currentRisk)
-      return
-    }
-    for (const [neighbor, neighborRisk] of getNeighbors(current, map)) {
-      if (currentRisk + neighborRisk < risks.get(neighbor)) {
-        risks.set(neighbor, currentRisk + neighborRisk)
-        prev.set(neighbor, current)
-      }
-    }
-  }
+  console.log('Part 1:', findBestPath(map))
 }
 
 async function part2() {
@@ -63,17 +25,27 @@ async function part2() {
   }
   map = nextMap.flat()
 
-  /** @type {Set<number>} */ const queue = new Set()
+  console.log('Part 2:', findBestPath(map))
+}
+
+async function readInput() {
+  const input = await readFile()
+  return input.split('\n').map((line) => [...line].map(Number))
+}
+
+/**
+ * @param {number[][]} map
+ */
+function findBestPath(map) {
+  /** @type {Set<number>} */ const queue = new Set([0])
   const risks = new Map()
-  map.forEach((row, y) => {
-    row.forEach((_, x) => {
+  map.forEach((/** @type {any[]} */ row, /** @type {number} */ y) => {
+    row.forEach((/** @type {any} */ _, /** @type {number} */ x) => {
       const cell = y * map[0].length + x
-      queue.add(cell)
       risks.set(cell, Infinity)
     })
   })
   risks.set(0, 0)
-  const prev = new Map()
   while (queue.size > 0) {
     let current = -1
     let lowestRisk = Infinity
@@ -86,27 +58,15 @@ async function part2() {
     queue.delete(current)
     const currentRisk = risks.get(current)
     if (current === map[0].length * map.length - 1) {
-      const path = new Set()
-      path.add(current)
-      while (current !== 0) {
-        current = prev.get(current)
-        path.add(current)
-      }
-      console.log('Part 2:', currentRisk)
-      return
+      return currentRisk
     }
     for (const [neighbor, neighborRisk] of getNeighbors(current, map)) {
       if (currentRisk + neighborRisk < risks.get(neighbor)) {
+        queue.add(neighbor)
         risks.set(neighbor, currentRisk + neighborRisk)
-        prev.set(neighbor, current)
       }
     }
   }
-}
-
-async function readInput() {
-  const input = await readFile()
-  return input.split('\n').map((line) => [...line].map(Number))
 }
 
 /**
