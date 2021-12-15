@@ -5,20 +5,27 @@ await part2()
 
 async function part1() {
   const map = await readInput()
-  /** @type {number[]} */ const queue = []
+  /** @type {Set<number>} */ const queue = new Set()
   const risks = new Map()
   map.forEach((row, y) => {
     row.forEach((_, x) => {
       const cell = y * map[0].length + x
-      queue.push(cell)
+      queue.add(cell)
       risks.set(cell, Infinity)
     })
   })
   risks.set(0, 0)
   const prev = new Map()
-  while (queue.length > 0) {
-    queue.sort((a, b) => risks.get(a) - risks.get(b))
-    let current = queue.shift()
+  while (queue.size > 0) {
+    let current = -1
+    let lowestRisk = Infinity
+    for (const cell of queue) {
+      if (risks.get(cell) < lowestRisk) {
+        current = cell
+        lowestRisk = risks.get(cell)
+      }
+    }
+    queue.delete(current)
     const currentRisk = risks.get(current)
     if (current === map[0].length * map.length - 1) {
       const path = new Set()
@@ -27,18 +34,6 @@ async function part1() {
         current = prev.get(current)
         path.add(current)
       }
-      map.forEach((line, y) => {
-        console.log(
-          line
-            .map((cell, x) =>
-              path.has(y * map[0].length + x)
-                ? `\x1b[38;5;226m${cell}\x1b[0m`
-                : cell,
-            )
-            .join(' '),
-        )
-      })
-      console.log()
       console.log('Part 1:', currentRisk)
       return
     }
@@ -51,7 +46,63 @@ async function part1() {
   }
 }
 
-async function part2() {}
+async function part2() {
+  let map = await readInput()
+
+  map = map.map((row) => {
+    const nextRow = []
+    for (let i = 0; i < 5; i++) {
+      nextRow.push(row.map((cell) => ((cell + i - 1) % 9) + 1))
+    }
+    return nextRow.flat()
+  })
+
+  const nextMap = []
+  for (let i = 0; i < 5; i++) {
+    nextMap.push(map.map((row) => row.map((cell) => ((cell + i - 1) % 9) + 1)))
+  }
+  map = nextMap.flat()
+
+  /** @type {Set<number>} */ const queue = new Set()
+  const risks = new Map()
+  map.forEach((row, y) => {
+    row.forEach((_, x) => {
+      const cell = y * map[0].length + x
+      queue.add(cell)
+      risks.set(cell, Infinity)
+    })
+  })
+  risks.set(0, 0)
+  const prev = new Map()
+  while (queue.size > 0) {
+    let current = -1
+    let lowestRisk = Infinity
+    for (const cell of queue) {
+      if (risks.get(cell) < lowestRisk) {
+        current = cell
+        lowestRisk = risks.get(cell)
+      }
+    }
+    queue.delete(current)
+    const currentRisk = risks.get(current)
+    if (current === map[0].length * map.length - 1) {
+      const path = new Set()
+      path.add(current)
+      while (current !== 0) {
+        current = prev.get(current)
+        path.add(current)
+      }
+      console.log('Part 2:', currentRisk)
+      return
+    }
+    for (const [neighbor, neighborRisk] of getNeighbors(current, map)) {
+      if (currentRisk + neighborRisk < risks.get(neighbor)) {
+        risks.set(neighbor, currentRisk + neighborRisk)
+        prev.set(neighbor, current)
+      }
+    }
+  }
+}
 
 async function readInput() {
   const input = await readFile()

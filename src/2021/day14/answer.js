@@ -64,20 +64,3 @@ async function readInput() {
     ),
   }
 }
-
-/**
- * @param {string} element1
- * @param {string} element2
- * @param {Map<string, Map<string, string>>} pairs
- * @param {number} depth
- * @param {Map<string, number>} countsByElement
- */
-function traverse(element1, element2, pairs, depth, countsByElement) {
-  if (depth === 0) {
-    return
-  }
-  const insertion = pairs.get(element1).get(element2)
-  countsByElement.set(insertion, (countsByElement.get(insertion) ?? 0) + 1)
-  traverse(element1, insertion, pairs, depth - 1, countsByElement)
-  traverse(insertion, element2, pairs, depth - 1, countsByElement)
-}
