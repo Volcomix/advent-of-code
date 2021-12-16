@@ -9,7 +9,11 @@ async function part1() {
   console.log('Part 1:', sumVersion(decodedTransmission))
 }
 
-async function part2() {}
+async function part2() {
+  const transmission = await readInput()
+  const decodedTransmission = decode(transmission)
+  console.log('Part 2:', evaluate(decodedTransmission))
+}
 
 async function readInput() {
   const input = await readFile()
@@ -110,4 +114,99 @@ function sumVersion(transmission) {
       sum + sumVersion(value),
     transmission.version,
   )
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }} transmission
+ */
+function evaluate(transmission) {
+  switch (transmission.typeId) {
+    case 0:
+      return evaluateSum(transmission.value)
+    case 1:
+      return evaluateProduct(transmission.value)
+    case 2:
+      return evaluateMin(transmission.value)
+    case 3:
+      return evaluateMax(transmission.value)
+    case 4:
+      return transmission.value
+    case 5:
+      return evaluateGreaterThan(transmission.value)
+    case 6:
+      return evaluateLessThan(transmission.value)
+    case 7:
+      return evaluateEqual(transmission.value)
+  }
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateSum(values) {
+  return values.reduce((sum, value) => sum + evaluate(value), 0)
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateProduct(values) {
+  return values.reduce((product, value) => product * evaluate(value), 1)
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateMin(values) {
+  return values.reduce((min, value) => Math.min(min, evaluate(value)), Infinity)
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateMax(values) {
+  return values.reduce(
+    (max, value) => Math.max(max, evaluate(value)),
+    -Infinity,
+  )
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateGreaterThan(values) {
+  const [a, b] = values
+  if (evaluate(a) > evaluate(b)) {
+    return 1
+  }
+  return 0
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateLessThan(values) {
+  const [a, b] = values
+  if (evaluate(a) < evaluate(b)) {
+    return 1
+  }
+  return 0
+}
+
+/**
+ * @param {{ typeId: number; value: any | any[]; }[]} values
+ * @returns {number}
+ */
+function evaluateEqual(values) {
+  const [a, b] = values
+  if (evaluate(a) === evaluate(b)) {
+    return 1
+  }
+  return 0
 }
