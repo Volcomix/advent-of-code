@@ -9,10 +9,26 @@ async function part1() {
   for (let i = 1; i < numbers.length; i++) {
     number = reduce(`[${number},${numbers[i]}]`)
   }
-  console.log('Part 1:', magnitude(JSON.parse(number)))
+  console.log('Part 1:', getMagnitude(JSON.parse(number)))
 }
 
-async function part2() {}
+async function part2() {
+  const numbers = await readInput()
+  let highestMagnitude = -Infinity
+  for (let i = 0; i < numbers.length; i++) {
+    for (let j = 0; j < numbers.length; j++) {
+      if (i === j) {
+        continue
+      }
+      const number = reduce(`[${numbers[i]},${numbers[j]}]`)
+      const magnitude = getMagnitude(JSON.parse(number))
+      if (magnitude > highestMagnitude) {
+        highestMagnitude = magnitude
+      }
+    }
+  }
+  console.log('Part 2:', highestMagnitude)
+}
 
 async function readInput() {
   const input = await readFile()
@@ -40,11 +56,11 @@ function reduce(number) {
  * @param {any} number
  * @returns {number}
  */
-function magnitude(number) {
+function getMagnitude(number) {
   if (typeof number === 'number') {
     return number
   }
-  return 3 * magnitude(number[0]) + 2 * magnitude(number[1])
+  return 3 * getMagnitude(number[0]) + 2 * getMagnitude(number[1])
 }
 
 /**
