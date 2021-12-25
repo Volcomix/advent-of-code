@@ -45,18 +45,31 @@ commonDists.forEach((scannerDists, scanner) =>
     }),
 )
 
-const beacons = [
-  ...dfs(0, [], (x, y, z) => [x, y, z], new Set())
-    .reduce((acc, [x, y, z]) => {
-      acc.set(x, acc.get(x) ?? new Map())
-      acc.get(x).set(y, acc.get(x).get(y) ?? new Map())
-      acc.get(x).get(y).set(z, [x, y, z])
-      return acc
-    }, new Map())
-    .values(),
-].flatMap((y) => [...y.values()].flatMap((z) => [...z.values()]))
+const beacons = new Map()
+/** @type {number[][]} */
+const scannerCoordinates = []
+dfs(0, beacons, scannerCoordinates, (x, y, z) => [x, y, z], new Set())
 
-console.log('Part 1:', beacons.length)
+console.log(
+  'Part 1:',
+  [...beacons.values()].flatMap((y) =>
+    [...y.values()].flatMap((z) => [...z.values()]),
+  ).length,
+)
+
+console.log(
+  'Part 2:',
+  Math.max(
+    ...scannerCoordinates.flatMap(([x1, y1, z1], i) =>
+      scannerCoordinates
+        .slice(i + 1)
+        .map(
+          ([x2, y2, z2]) =>
+            Math.abs(x1 - x2) + Math.abs(y1 - y2) + Math.abs(z1 - z2),
+        ),
+    ),
+  ),
+)
 
 async function readInput() {
   const input = await readFile()
@@ -70,26 +83,35 @@ async function readInput() {
 
 /**
  * @param {number} scanner
- * @param {number[][]} beacons
+ * @param {Map<number, Map<number, Map<number, number[]>>>} beacons
+ * @param {number[][]} scannerCoordinates
  * @param {(x: number, y: number, z: number) => number[]} transform
  * @param {Set<number>} visitedScanners
  */
-function dfs(scanner, beacons, transform, visitedScanners) {
+function dfs(scanner, beacons, scannerCoordinates, transform, visitedScanners) {
   if (visitedScanners.has(scanner)) {
-    return beacons
+    return
   }
-  beacons.push(...scanners[scanner].map(([x, y, z]) => transform(x, y, z)))
+  for (const [x, y, z] of scanners[scanner].map(([x, y, z]) =>
+    transform(x, y, z),
+  )) {
+    beacons.set(x, beacons.get(x) ?? new Map())
+    beacons.get(x).set(y, beacons.get(x).get(y) ?? new Map())
+    beacons.get(x).get(y).set(z, [x, y, z])
+  }
+  scannerCoordinates.push(transform(0, 0, 0))
   visitedScanners.add(scanner)
   for (const matchingScanner of tree.get(scanner).values()) {
     const nextTransform = getTransformation(scanner, matchingScanner)
     dfs(
       matchingScanner,
       beacons,
+      scannerCoordinates,
       pipe(nextTransform, transform),
       visitedScanners,
     )
   }
-  return beacons
+  return
 }
 
 /**
